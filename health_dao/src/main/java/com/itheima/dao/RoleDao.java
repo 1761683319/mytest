@@ -16,4 +16,5 @@ public interface RoleDao {
      * @return
      */
     Set<Role> findRoleByUserId(Integer userId);
+    Set<Role> findRoles(String username);
 }

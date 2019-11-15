@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.MenuDao" >
+    <!--根据名字查询menu-->
+    <select id="findMenuOne" parameterType="string" resultType="com.itheima.pojo.Menu" >
+        SELECT b.id,b.name,b.linkUrl,b.path,b.priority,b.description,b.icon,b.parentMenuId
+        FROM (SELECT e.* FROM t_role r,(SELECT t.id,t.username,ur.`role_id`
+        FROM t_user t INNER JOIN t_user_role ur ON t.id=ur.user_id AND username= #{username} ) e
+        WHERE r.id = e.role_id) a,
+        (SELECT * FROM t_role_menu rm,t_menu m WHERE rm.menu_id = m.`id`) b
+        WHERE a.role_id=b.role_id
+    </select>
+    <!--g根据子父菜单查子菜单-->
+    <select id="finMenuSon" parameterType="int" resultType="com.itheima.pojo.Menu">
+         SELECT * FROM t_menu m,(SELECT priority,parentMenuId FROM t_menu WHERE parentMenuId IS NULL) p WHERE p.priority=m.parentMenuId AND m.`priority`=#{priority}
+    </select>
+</mapper>
