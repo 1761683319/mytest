@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.SetmealDao">
+    <!--新增套餐-->
+    <insert id="add" parameterType="com.itheima.pojo.Setmeal">
+        /*通过selectKey获取套餐表的id*/
+        <selectKey order="AFTER" keyProperty="id" resultType="int">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_setmeal (name, code, helpCode, sex, age , price, remark, attention , img)
+        VALUES (#{name}, #{code}, #{helpCode}, #{sex}, #{age} , #{price}, #{remark}, #{attention} , #{img})
+    </insert>
+
+    <!--设置检查组和检查项关系-->
+    <insert id="setSetmealAndCheckGroup" parameterType="map">
+        insert into t_setmeal_checkgroup (setmeal_id,checkgroup_id)
+        values (#{setmealId}, #{groupId})
+    </insert>
+
+
+    <!--分页-->
+    <select id="selectByCondition" parameterType="string" resultType="com.itheima.pojo.Setmeal">
+        SELECT * from t_setmeal
+        <if test="value != null and value.length > 0">
+            where code = #{value} or name = #{value} or helpCode = #{helpCode}
+        </if>
+    </select>
+
+    <!-- 移动端-查询所有套餐列表 -->
+    <select id="getSetmeal" resultType="com.itheima.pojo.Setmeal">
+        select * from t_setmeal
+    </select>
+    <!-- 套餐详情页面数据展示(套餐 检查组 检查项数据) -->
+   <!-- <select id="findById" parameterType="int" resultType="com.itheima.pojo.Setmeal">
+        select * from t_setmeal where id = #{id}
+    </select>-->
+
+
+    <!--方式一：-->
+    <!-- 返回结果集-->
+    <!--<resultMap id="findByIdResultMap" type="com.itheima.pojo.Setmeal">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="helpCode" property="helpCode"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="price" property="price"/>
+        <result column="remark" property="remark"/>
+        <result column="attention" property="attention"/>
+        <result column="img" property="img"/>-->
+        <!--根据套餐id查询检查组 配置
+        property:将返回的结果放入此属性 javaType:返回的数据类型设置
+        ofType：实体对象对象list  column:查询条件  select:查询关联表的数据语句
+        -->
+       <!-- <collection property="checkGroups" javaType="list" ofType="com.itheima.pojo.CheckGroup" column="id"
+                    select="com.itheima.dao.CheckGroupDao.findCheckGroupBySetmealId"/>
+    </resultMap>-->
+
+    <!--套餐详情页面数据展示(套餐 检查组 检查项数据)-->
+    <!--<select id="findById" parameterType="int" resultMap="findByIdResultMap">
+        select * from t_setmeal where id = #{id}
+    </select>-->
+
+
+    <!--方式二：  可以一个ResultMap继承另一个ResultMap 需要根据不同的返回结果使用相应的ResultMap-->
+    <!-- 返回结果集-->
+    <resultMap id="baseResultMap" type="com.itheima.pojo.Setmeal">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="helpCode" property="helpCode"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="price" property="price"/>
+        <result column="remark" property="remark"/>
+        <result column="attention" property="attention"/>
+        <result column="img" property="img"/>
+    </resultMap>
+
+    <resultMap id="findByIdResultMap" type="com.itheima.pojo.Setmeal" extends="baseResultMap">
+        <!--根据套餐id查询检查组 配置
+    property:将返回的结果放入此属性 javaType:返回的数据类型设置
+    ofType：实体对象对象list  column:查询条件  select:查询关联表的数据语句
+    -->
+        <collection property="checkGroups" javaType="list" ofType="com.itheima.pojo.CheckGroup" column="id"
+                    select="com.itheima.dao.CheckGroupDao.findCheckGroupBySetmealId"/>
+    </resultMap>
+
+    <!--套餐详情页面数据展示(套餐 检查组 检查项数据)-->
+    <select id="findById" parameterType="int" resultMap="findByIdResultMap">
+        select * from t_setmeal where id = #{id}
+    </select>
+
+    <!--查询套餐预约数量-->
+    <select id="getSetmealReport" resultType="map">
+        select count(o.id) value,ts.name from t_order o,t_setmeal ts
+        where o.setmeal_id = ts.id
+        group by ts.`name`
+    </select>
+
+    <!--热门套餐数据 （前4个套餐数据）-->
+    <select id="hotSetmeal" resultType="map">
+        select ts.name,count(o.id) setmeal_count ,count(o.id)/(select count(*) from t_order) proportion,ts.remark
+        from t_setmeal ts,t_order o where ts.id = o.setmeal_id
+        group by ts.name order by setmeal_count limit 0,4
+    </select>
+</mapper>
