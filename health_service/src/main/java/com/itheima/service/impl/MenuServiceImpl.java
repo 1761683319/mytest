@@ -30,9 +30,9 @@ public class MenuServiceImpl implements MenuService {
         if(!menu.isEmpty()||menu.size()>0){
             for (Menu menu1 : menu) {
                 //第二个查询子菜单的数据,如果父菜单id不为空，则查询子菜单，否则返回null
-                if(menu1.getParentMenuId()==null){
-                    Integer priority=menu1.getPriority();
-                    List<Menu> menuSons=menuDao.finMenuSon(priority);
+                if(menu1.getIcon()!=null){
+                    Integer id=menu1.getId();
+                    List<Menu> menuSons=menuDao.finMenuSon(id);
                     menu1.setChildren(menuSons);
                 }
                 //根据名字查询权限

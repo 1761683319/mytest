@@ -9,10 +9,10 @@
         FROM t_user t INNER JOIN t_user_role ur ON t.id=ur.user_id AND username= #{username} ) e
         WHERE r.id = e.role_id) a,
         (SELECT * FROM t_role_menu rm,t_menu m WHERE rm.menu_id = m.`id`) b
-        WHERE a.role_id=b.role_id
+        WHERE a.role_id=b.role_id AND ISNULL(parentMenuId)
     </select>
     <!--g根据子父菜单查子菜单-->
     <select id="finMenuSon" parameterType="int" resultType="com.itheima.pojo.Menu">
-         SELECT * FROM t_menu m,(SELECT priority,parentMenuId FROM t_menu WHERE parentMenuId IS NULL) p WHERE p.priority=m.parentMenuId AND m.`priority`=#{priority}
+        SELECT * FROM t_menu m WHERE m.parentMenuId =#{parentMenuId}
     </select>
 </mapper>
