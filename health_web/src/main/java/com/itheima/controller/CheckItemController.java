@@ -54,7 +54,7 @@ public class CheckItemController {
      * @return
      */
     @RequestMapping(value = "/findPage", method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('CHECKITEM_QUERY')")//CHECKITEM_QUERY关键字权限 才可以查询检查项数据
+    //@PreAuthorize("hasAnyAuthority('CHECKITEM_QUERY')")//CHECKITEM_QUERY关键字权限 才可以查询检查项数据
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         //调用service服务
         try {

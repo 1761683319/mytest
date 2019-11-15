@@ -13,4 +13,96 @@
         (SELECT * FROM t_role_permission rp,t_permission p WHERE rp.permission_id=p.id) h
         WHERE f.role_id=h.role_id
     </select>
+
+    <!--查询 角色列表-->
+    <select id="findPage" parameterType="string" resultType="com.itheima.pojo.Role">
+        select * from t_role
+        <if test="value !=null and value.length>0">
+            where  name like concat('%',#{value},'%')
+        </if>
+    </select>
+
+    <!--添加 编辑 分配权限列表显示-->
+    <select id="findPermissionList" resultType="com.itheima.pojo.Permission">
+        select * from t_permission
+    </select>
+
+    <!--添加-->
+    <insert id="add" parameterType="com.itheima.pojo.Role">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into t_role(name,keyword,description) value (#{name},#{keyword},#{description})
+    </insert>
+
+    <!--添加中间表-->
+    <insert id="addRoleAndPermission" parameterType="map">
+        INSERT INTO t_role_permission(role_id,permission_id) VALUES(#{Role_Id},#{permission_Id})
+    </insert>
+
+    <!--添加中间表-->
+    <insert id="addRoleAndMenu" parameterType="map">
+      INSERT INTO t_role_menu(role_id,menu_id) VALUES(#{Role_Id},#{Menu_Id})
+    </insert>
+
+    <!--编辑回显 查询角色的数据-->
+    <select id="findById" parameterType="int" resultType="com.itheima.pojo.Role">
+        SELECT * FROM t_role WHERE id = #{id}
+    </select>
+
+    <!-- 编辑回显 向中间表查询已经选中的IDS-->
+    <select id="findpermissionIds" parameterType="int" resultType="int">
+        SELECT permission_id FROM t_role_permission WHERE role_id = #{id}
+    </select>
+    <!--编辑回显 向中间表查询已经选择的菜单Ids-->
+    <select id="findMenuIds" parameterType="int" resultType="int">
+        SELECT menu_id FROM t_role_menu WHERE role_id = #{id}
+    </select>
+
+
+    <!--编辑 更新角色表-->
+    <update id="edit" parameterType="com.itheima.pojo.Role">
+        UPDATE t_role
+        <set>
+            <if test="name !=null and name.length>0">
+                name =#{name},
+            </if>
+            <if test="keyword !=null and keyword.length>0">
+                keyword =#{keyword},
+            </if>
+            <if test="description !=null and description.length>0">
+                description =#{description},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--编辑操作 删除中间表的数据-->
+    <delete id="deleteRoleIdByPermissionIds" parameterType="int">
+        DELETE FROM t_role_permission WHERE role_id = #{id}
+    </delete>
+
+    <!--编辑操作 删除角色和菜单中间表的数据-->
+    <delete id="deleteRoleIdByMenuIds" parameterType="int">
+       DELETE FROM t_role_menu WHERE role_id = #{id}
+    </delete>
+
+    <!--删除前先询关系 ① 角色和权限之间的关系-->
+    <select id="findRoleIdByPermissionCount" parameterType="int" resultType="long">
+         SELECT COUNT(role_id) FROM t_role_permission WHERE role_id = #{id}
+     </select>
+
+    <!--删除前查询关系 ② 角色和菜单的关系-->
+    <select id="findRoleIdByMenuCount" parameterType="int" resultType="long">
+         SELECT COUNT(role_id) FROM t_role_menu WHERE role_id = #{id}
+     </select>
+    <!--删除前关系查询 ③ 角色与用户的关系-->
+    <select id="findUserByRoleId" parameterType="int" resultType="long">
+         SELECT COUNT(role_id) FROM t_user_role WHERE role_id = #{id}
+     </select>
+    <!--删除操作-->
+    <select id="delete" parameterType="int">
+         DELETE FROM t_role WHERE id = #{id}
+     </select>
+
 </mapper>
