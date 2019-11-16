@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.MenuDao" >
+    <!--根据名字查询menu-->
+    <select id="findMenuOne" parameterType="string" resultType="com.itheima.pojo.Menu" >
+        SELECT b.id,b.name,b.linkUrl,b.path,b.priority,b.description,b.icon,b.parentMenuId
+        FROM (SELECT e.* FROM t_role r,(SELECT t.id,t.username,ur.`role_id`
+        FROM t_user t INNER JOIN t_user_role ur ON t.id=ur.user_id AND username= #{username} ) e
+        WHERE r.id = e.role_id) a,
+        (SELECT * FROM t_role_menu rm,t_menu m WHERE rm.menu_id = m.`id`) b
+        WHERE a.role_id=b.role_id AND ISNULL(parentMenuId)
+    </select>
+    <!--g根据子父菜单查子菜单-->
+    <select id="finMenuSon" parameterType="int" resultType="com.itheima.pojo.Menu">
+        SELECT * FROM t_menu m WHERE m.parentMenuId =#{parentMenuId}
+    </select>
+
+
+    <!--添加菜单-->
+    <insert id="add" parameterType="com.itheima.pojo.Menu" keyProperty="id" useGeneratedKeys="true">
+        insert into t_menu (name, linkUrl, path, priority, icon, description, parentMenuId, level)
+        values (#{name}, #{linkUrl}, #{path}, #{priority}, #{icon}, #{description}, #{parentMenuId}, #{level})
+    </insert>
+
+    <!--根据用户名查询用户菜单-->
+    <select id="getUserMenuByUsername" resultType="map">
+        SELECT distinct m.id, m.name title, m.linkUrl, m.path, m.priority, m.icon, m.parentMenuId
+        FROM t_user_role ur
+                 JOIN t_role r ON ur.`role_id` = r.`id`
+                 JOIN t_role_menu rm ON r.`id` = rm.`role_id`
+                 JOIN t_menu m ON rm.menu_id = m.`id`
+        WHERE ur.`user_id` = (select id from t_user where username = #{username})
+    </select>
+
+    <!--查询菜单分页数据-->
+    <select id="findPage" parameterType="String" resultType="map">
+        SELECT m1.*, IFNULL(m2.name, '/') parentName FROM t_menu m1 LEFT JOIN t_menu m2 ON m1.parentMenuId = m2.id
+        <if test="value != null and value != '' ">
+            where m1.name like concat("%", #{name}, "%")
+        </if>
+    </select>
+
+    <!--获取顶级菜单-->
+    <select id="getLevelOneMenu" resultType="com.itheima.pojo.Menu">
+        select *
+        from t_menu
+        where level = 1
+        order by priority
+    </select>
+
+    <!--查询是否存在该优先级-->
+    <select id="isExistPriority" resultType="int">
+        select count(id) from t_menu
+        <where>
+            <if test="parentMenuId != null">
+                and parentMenuId = #{parentMenuId}
+            </if>
+            <if test="parentMenuId == null">
+                and parentMenuId is null
+            </if>
+            <if test="priority != null">
+                and priority = #{priority}
+            </if>
+        </where>
+    </select>
+
+    <!--将某优先级以后的priority做+1处理-->
+    <update id="updateOneLevelPriorityAfterNumber" parameterType="int">
+        update t_menu
+        set priority = priority + 1
+        where priority &gt;= #{priority}
+          and parentMenuId is null
+    </update>
+    <!--通过父id查询优先级的最大值-->
+    <select id="getMaxPriorityByParentId" parameterType="int" resultType="int">
+        select max(priority) from t_menu
+        <where>
+            <if test="value != null">
+                and parentMenuId = #{parentMenuId}
+            </if>
+            <if test="value == null">
+                and parentMenuId is null
+            </if>
+        </where>
+        limit 0,1
+    </select>
+
+    <!--通过id查询menu-->
+    <select id="findMenuById" resultType="com.itheima.pojo.Menu">
+        select *
+        from t_menu
+        where id = #{id}
+    </select>
+    <!--通过id查询子菜单-->
+    <select id="findSonMenuById" resultType="com.itheima.pojo.Menu">
+        select *
+        from t_menu
+        where parentMenuId = #{id}
+    </select>
+    <!--根据id查询parentMenuId=id && priority>=#{priority}的menu列表-->
+    <select id="findSonMenuByIdAndAfterEqualPriority" resultType="com.itheima.pojo.Menu">
+        select *
+        from t_menu
+        where parentMenuId = #{id} and priority &gt;= #{priority}
+    </select>
+
+    <!--更新二级节点的优先级和路径-->
+    <update id="updateTwoLevelPriorityAfterNumber">
+        update t_menu
+        set priority = priority + 1,
+            path     = concat("/", #{path}, "-", #{priority} + 1)
+        where priority &gt;= #{priority}
+          and parentMenuId = #{parentMenuId}
+    </update>
+
+    <!--获取path最大的顶级菜单-->
+    <select id="findLevelOneMaxPathMenu" resultType="com.itheima.pojo.Menu">
+        select *
+        from t_menu
+        where parentMenuId is null
+        order by path desc limit 0, 1
+    </select>
+
+    <!--查询所有菜单-->
+    <select id="findAll" resultType="map">
+        select *
+        from t_menu
+    </select>
+
+    <!--修改菜单-->
+    <update id="edit" parameterType="com.itheima.pojo.Menu">
+        update t_menu
+        set name         = #{name},
+            linkUrl      = #{linkUrl},
+            path         = #{path},
+            priority     = #{priority},
+            description  = #{description},
+            icon         = #{icon},
+            parentMenuId = #{parentMenuId},
+            level        = #{level}
+        where id = #{id}
+    </update>
+
+    <!--查询是否有关联项-->
+    <select id="findCountByMenuId" resultType="int">
+        select count(*) from t_role_menu where menu_id = #{menu_id}
+    </select>
+
+    <!--根据id删除-->
+    <delete id="deleteById" parameterType="int">
+        delete from t_menu where id = #{id}
+    </delete>
+</mapper>

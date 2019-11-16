@@ -1,8 +1,10 @@
 package com.itheima.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.itheima.constant.RedisConstant;
 import com.itheima.dao.CheckGroupDao;
 import com.itheima.dao.MemberDao;
 import com.itheima.dao.SetmealDao;
@@ -13,6 +15,8 @@ import com.itheima.service.CheckGroupService;
 import com.itheima.service.SetmealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +34,9 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Autowired
     private SetmealDao setmealDao;
+
+    @Autowired
+    private JedisPool jedisPool;
 
     @Autowired
     private MemberDao memberDao;
@@ -67,7 +74,29 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     public List<Setmeal> getSetmeal() {
-        return setmealDao.getSetmeal();
+//        return setmealDao.getSetmeal();
+        // 从连接池中 获取redis连接
+        Jedis jedis = jedisPool.getResource();
+
+        // 查询redis中的套餐数据 (缓存)
+        String jsonStr = jedis.get(RedisConstant.SETMEAL_LIST);
+
+        // 判断套餐数据是否存在
+        if (jsonStr != null && jsonStr.length() > 0) {
+            // 如果存在 则将redis中的json取出 转成list数据 返回给控制层
+            return JSONArray.parseArray(jsonStr, Setmeal.class);
+
+        } else {
+
+            // 如果不存在, 则需要调用dao层查询
+            List<Setmeal> setmeals = setmealDao.getSetmeal();
+            // 将查询结果转成json串 存入redis中
+            String jsonString = JSONArray.toJSONString(setmeals);
+            jedis.set(RedisConstant.SETMEAL_LIST, jsonString);
+            return setmeals;
+        }
+
+
     }
     /**
      * 套餐详情页面数据展示(套餐 检查组 检查项数据)
