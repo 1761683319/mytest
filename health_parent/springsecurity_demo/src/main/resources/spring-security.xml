@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/mvc
+                            http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                            http://code.alibabatech.com/schema/dubbo
+                            http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context.xsd
+                            http://www.springframework.org/schema/security
+                            http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--包扫描-->
+    <context:component-scan base-package="com.itheima"/>
+    <mvc:annotation-driven></mvc:annotation-driven>
+    <!--开启注解方式权限控制-->
+    <security:global-method-security pre-post-annotations="enabled" />
+    <!--安全框架配置
+    403 - Forbidden:没有权限错误
+    -->
+    <!--匿名访问 security="none"：不需任何权限都可以访问-->
+    <security:http pattern="/css/**" security="none"/>
+    <security:http pattern="/img/**" security="none"/>
+    <security:http pattern="/js/**" security="none"/>
+    <security:http pattern="/login.html" security="none"/>
+    <security:http pattern="/nopermission.html" security="none"/>
+
+    <!--
+    拦截规则配置：
+      auto-config：自动配置
+      use-expressions:false不使用表达式
+      access：hasRole()（使用了表达式）-->
+    <security:http auto-config="true" use-expressions="true">
+        <!--拦截规则配置：配置哪些地址被拦截
+        pattern:所有的页面都被拦截
+        access：当前登录的用户有ROLE_ADMIN权限就可以访问
+        /**:递归目录都被权限控制
+        /*:当前目录被权限控制
+        intercept-url:按照顺序执行  满足/**  如果没有权限403
+        -->
+
+        <security:intercept-url pattern="/pages/**"  access="isAuthenticated()" />
+
+
+        <!--只要认证通过就可以访问  /hello/update.do-->
+        <security:intercept-url pattern="/a.html"  access="isAuthenticated()" />
+
+        <!--拥有add权限就可以访问b.html页面-->
+        <security:intercept-url pattern="/b.html"  access="hasAuthority('add')" />
+
+        <!--拥有ROLE_ADMIN角色就可以访问c.html页面-->
+        <security:intercept-url pattern="/c.html"  access="hasRole('ROLE_ADMIN')" />
+
+        <!--拥有ROLE_ADMIN角色就可以访问d.html页面，
+            注意：此处虽然写的是ADMIN角色，框架会自动加上前缀ROLE_-->
+        <security:intercept-url pattern="/d.html"  access="hasRole('ADMIN')" />
+
+        <security:intercept-url pattern="/**" access="hasRole('ROLE_ADMIN')"/>
+        <!--自定义登录配置 改变框架默认登录
+        login-processing-url：页面登录请求地址
+        login-page：登录页面配置
+        username-parameter:账号
+        password-parameter:密码
+        default-target-url：登录成功后总是往index.html跳
+        authentication-failure-url：登录失败总是往login.html跳
+        always-use-default-target="true"
+        默认不用配置也可以：
+         username-parameter="username"
+         password-parameter="password"
+         默认登录请求：/login
+         登出请求：/logout
+        -->
+        <security:form-login login-page="/login.html" always-use-default-target="true"
+                             default-target-url="/index.html"
+                             authentication-failure-url="/login.html"
+                             login-processing-url="/login.do"/>
+        <!--禁用跨站请求-->
+        <security:csrf disabled="true"/>
+        <!--退出配置
+        logout-url="/logout.do" ：登出地址配置
+        logout-success-url：登出成功的页面
+        invalidate-session：删除session
+        -->
+        <security:logout logout-url="/logout.do" logout-success-url="/login.html" invalidate-session="true"/>
+
+        <!--403没有权限跳转页面 没有权限页面 -->
+        <security:access-denied-handler error-page="/nopermission.html"/>
+    </security:http>
+    <!--认证管理器配置 连接数据库对比账号或密码是否正确?-->
+    <!--<security:authentication-manager>
+        <security:authentication-provider>
+            <security:user-service>
+                &lt;!&ndash;认证用户对象  写死账号和密码({noop}:不加密对比) 以及 权限&ndash;&gt;
+                <security:user name="admin" authorities="ROLE_ADMIN" password="{noop}123456"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>-->
+
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="mySpringSecurity">
+            <!--用什么加密算法验证密码-->
+            <security:password-encoder ref="bCryptPasswordEncoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <!--将自定义认证和授权类 注册到spring容器-->
+    <bean id="mySpringSecurity" class="com.itheima.demo.MySpringSecurity"/>
+    <!--注册密码加密对象-->
+    <bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+</beans>

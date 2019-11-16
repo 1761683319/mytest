@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.CheckItemDao">
+    <!--新增检查项-->
+    <insert id="add" parameterType="com.itheima.pojo.CheckItem">
+        INSERT INTO t_checkitem (code, name, sex, age, price , type, remark, attention)
+        VALUES (#{code}, #{name}, #{sex}, #{age}, #{price} , #{type}, #{remark}, #{attention})
+    </insert>
+    <!--检查项分页
+    1.分页插件底层如何实现？
+           真正执行查询的时候，插件会将语句通过spring拦截器拦截，
+           将设置的分页参数拼接到需要执行的语句后
+           最后执行查询，得到page结果对象
+    2.value到底能不能随便写？
+         参数：字符串 默认属性名是value
+         改为自定义属性？ @Param("abc") 参数 abc != null
+    3.页面分页代码优化
+
+    -->
+    <select id="selectByCondition" parameterType="string" resultType="com.itheima.pojo.CheckItem">
+        SELECT * from t_checkitem
+        <if test="value != null and value.length > 0">
+            where code = #{value} or name = #{value}
+        </if>
+    </select>
+
+    <!--根据检查项id查询中间表数据是否存在-->
+    <select id="findCountByCheckItemId" parameterType="int" resultType="int">
+        select count(*) from t_checkgroup_checkitem where checkitem_id = #{id}
+    </select>
+
+    <!--根据检查项id删除检查项记录-->
+    <delete id="deleteByCheckItemId" parameterType="int">
+        delete from t_checkitem where id = #{id}
+    </delete>
+
+    <!-- 根据检查项id查询检查项数据 -->
+    <select id="findById" parameterType="int" resultType="com.itheima.pojo.CheckItem">
+        SELECT * from t_checkitem  where id = #{id}
+    </select>
+
+    <!--编辑检查项-->
+    <update id="edit" parameterType="com.itheima.pojo.CheckItem">
+        update t_checkitem
+         <set>
+             <if test="code != null">
+                 code = #{code},
+             </if>
+             <if test="name != null">
+                 name = #{name},
+             </if>
+             <if test="sex != null">
+                 sex = #{sex},
+             </if>
+             <if test="age != null">
+                 age = #{age},
+             </if>
+             <if test="price != null">
+                 price = #{price},
+             </if>
+             <if test="type != null">
+                 type = #{type},
+             </if>
+             <if test="remark != null">
+                 remark = #{remark},
+             </if>
+             <if test="attention != null">
+                 attention = #{attention},
+             </if>
+         </set>
+        where id = #{id}
+    </update>
+
+
+    <!-- 根据所有检查项 -->
+    <select id="findAll"  resultType="com.itheima.pojo.CheckItem">
+        SELECT * from t_checkitem
+    </select>
+
+
+    <!--根据检查组id查询检查项数据-->
+    <select id="findCheckItemByGroupId" parameterType="int" resultType="com.itheima.pojo.CheckItem">
+      select * from t_checkitem where id in ( select checkitem_id from t_checkgroup_checkitem where checkgroup_id = #{id})
+    </select>
+</mapper>
