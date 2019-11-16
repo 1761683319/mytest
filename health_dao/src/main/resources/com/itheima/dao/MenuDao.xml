@@ -4,12 +4,24 @@
 <mapper namespace="com.itheima.dao.MenuDao" >
     <!--根据名字查询menu-->
     <select id="findMenuOne" parameterType="string" resultType="com.itheima.pojo.Menu" >
-        SELECT b.id,b.name,b.linkUrl,b.path,b.priority,b.description,b.icon,b.parentMenuId
-        FROM (SELECT e.* FROM t_role r,(SELECT t.id,t.username,ur.`role_id`
-        FROM t_user t INNER JOIN t_user_role ur ON t.id=ur.user_id AND username= #{username} ) e
-        WHERE r.id = e.role_id) a,
-        (SELECT * FROM t_role_menu rm,t_menu m WHERE rm.menu_id = m.`id`) b
-        WHERE a.role_id=b.role_id AND ISNULL(parentMenuId)
+       SELECT tm.id,tm.name,tm.linkUrl,tm.path,tm.priority,tm.description,tm.icon,tm.parentMenuId
+FROM t_menu tm
+WHERE tm.id IN (
+	SELECT trm.menu_id
+	FROM t_role_menu trm
+	WHERE trm.role_id IN (
+		SELECT tr.id
+		FROM t_role tr, t_user_role tur
+		WHERE tur.role_id = tr.id
+			AND tr.id IN (
+				SELECT tur.role_id
+				FROM t_user tu, t_user_role tur
+				WHERE tu.id = tur.user_id
+					AND username = #{username}
+			)
+	)
+) AND ISNULL(parentMenuId)
+
     </select>
     <!--g根据子父菜单查子菜单-->
     <select id="finMenuSon" parameterType="int" resultType="com.itheima.pojo.Menu">
