@@ -17,10 +17,13 @@ import java.io.InputStream;
  * 七牛云工具类
  */
 public class QiniuUtils {
-    public  static String accessKey = "A_jKJnB1bpEPHn1QdqzPpelrCPU6QfJbJnv-_RR4";
-    public  static String secretKey = "CldWf-r2Z6mEkuqQD8zEOVj5U_jIRK-Dcea6T9oB";
-    public  static String bucket = "heima-health77";
-
+//    public  static String accessKey = "A_jKJnB1bpEPHn1QdqzPpelrCPU6QfJbJnv-_RR4";
+//    public  static String secretKey = "CldWf-r2Z6mEkuqQD8zEOVj5U_jIRK-Dcea6T9oB";
+//    public  static String bucket = "heima-health77";
+    
+    public  static String accessKey = "HoOW31aWflTSVeDfgeWyrowYMOifgoiNB4RL2XOa";
+    public  static String secretKey = "SSTYZ1c-jq2iYte4fzNY_eHuCGBZ7uahxWU1Z3x8";
+    public  static String bucket = "flast";
     /**
      * 将本地文件上传七牛云
      * @param filePath

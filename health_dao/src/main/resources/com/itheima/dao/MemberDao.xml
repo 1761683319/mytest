@@ -121,7 +121,7 @@
         and ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) &lt;= 59 THEN '31-59岁'
         WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 60 THEN '60岁以上'
         END as nnd
-        from t_member
+        from t_member where birthday is not null
         ) a GROUP BY nnd
 
     </select>
