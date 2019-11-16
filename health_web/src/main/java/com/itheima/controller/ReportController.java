@@ -45,6 +45,8 @@ public class ReportController {
     @Reference
     private ReportService reportService;// 页面需要的数据是 多种类型
 
+
+
     /**
      * 会员数量折线图
      */
@@ -80,6 +82,45 @@ public class ReportController {
         rsMap.put("setmealNames", getSetmealMap.get("setmealNames"));
         //套餐对应的预约数量
         rsMap.put("setmealCount", getSetmealMap.get("setmealCount"));
+        return new Result(true, MessageConstant.GET_SETMEAL_COUNT_REPORT_SUCCESS, rsMap);
+    }
+
+
+    /**
+     * @Path: com.itheima.controller.ReportController
+     * @param
+     * @return: com.itheima.entity.Result
+     * @Author: Zzc
+     * @Date: 2019/11/15 16:56
+     * @Description: 会员男女比例占比饼图
+    */
+    @RequestMapping(value = "/getMemberSexReport", method = RequestMethod.GET)
+    public Result getMemberSexReport() {
+        Map<String, Object> rsMap = new HashMap<>();
+        Map<String, Object> getMemberMapSex = memberService.getMemberSexReport();
+        //套餐名称
+        rsMap.put("MemberSex", getMemberMapSex.get("MemberSex"));
+        //套餐对应的预约数量
+        rsMap.put("MemberSexCount", getMemberMapSex.get("MemberSexCount"));
+        return new Result(true, MessageConstant.GET_SETMEAL_COUNT_REPORT_SUCCESS, rsMap);
+    }
+
+    /**
+     * @Path: com.itheima.controller.ReportController
+     * @param
+     * @return: com.itheima.entity.Result
+     * @Author: Zzc
+     * @Date: 2019/11/15 16:56
+     * @Description: 年龄段占比饼图
+     */
+    @RequestMapping(value = "/getMemberAgeReport", method = RequestMethod.GET)
+    public Result getMemberAgeReport() {
+        Map<String, Object> rsMap = new HashMap<>();
+        Map<String, Object> getMemberMapSex = memberService.getMemberAgeReport();
+        //套餐名称
+        rsMap.put("MemberAge", getMemberMapSex.get("MemberAge"));
+        //套餐对应的预约数量
+        rsMap.put("MemberAgeCount", getMemberMapSex.get("MemberAgeCount"));
         return new Result(true, MessageConstant.GET_SETMEAL_COUNT_REPORT_SUCCESS, rsMap);
     }
 

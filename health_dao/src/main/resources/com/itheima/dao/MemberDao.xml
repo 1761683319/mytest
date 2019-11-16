@@ -95,4 +95,36 @@
     <select id="findMemberTotalCount" resultType="int">
         select count(id) from t_member
     </select>
+
+
+    <!--查询套餐预约数量-->
+    <select id="getMemberSexReport" resultType="map">
+       select CASE tm.sex WHEN '1' THEN '男' WHEN '2' THEN '女' END AS name ,count(tm.sex) value from t_member tm
+		where tm.sex is not null
+        group by  tm.sex
+    </select>
+
+    <!--查询套餐预约数量-->
+    <select id="getMemberAgeReport" resultType="map">
+        SELECT nnd as name,count(*) as value from(
+        SELECT
+        CASE
+        WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 0
+        and ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) &lt;= 12 THEN '0-12岁'
+        WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 13
+        and ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) &lt;= 17 THEN '13-17岁'
+        WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 18
+        and ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) &lt;= 22 THEN '18-22岁'
+        WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 23
+        and ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) &lt;= 30 THEN '23-30岁'
+        WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 31
+        and ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) &lt;= 59 THEN '31-59岁'
+        WHEN ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) >= 60 THEN '60岁以上'
+        END as nnd
+        from t_member
+        ) a GROUP BY nnd
+
+    </select>
+
+
 </mapper>

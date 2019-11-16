@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.itheima.pojo.Member;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MemberDao {
     public List<Member> findAll();
@@ -17,4 +18,23 @@ public interface MemberDao {
     public Integer findMemberCountByDate(String date);
     public Integer findMemberCountAfterDate(String date);
     public Integer findMemberTotalCount();
+    /**
+     * @Path: com.itheima.dao.MemberDao
+     * @param
+     * @return: java.util.List<java.util.Map>
+     * @Author: Zzc
+     * @Date: 2019/11/15 17:22
+     * @Description:  会员男女比例占比饼图
+    */
+    List<Map> getMemberSexReport();
+    /**
+     * @Path: com.itheima.dao.MemberDao
+     * @param
+     * @return: java.util.List<java.util.Map>
+     * @Author: Zzc
+     * @Date: 2019/11/15 19:34
+     * @Description: 龄段占比饼图
+    */
+    List<Map> getMemberAgeReport();
+
 }
