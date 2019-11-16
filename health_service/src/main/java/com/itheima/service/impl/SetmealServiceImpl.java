@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.itheima.dao.CheckGroupDao;
+import com.itheima.dao.MemberDao;
 import com.itheima.dao.SetmealDao;
 import com.itheima.entity.PageResult;
 import com.itheima.pojo.CheckGroup;
@@ -29,6 +30,9 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Autowired
     private SetmealDao setmealDao;
+
+    @Autowired
+    private MemberDao memberDao;
 
     /**
      * 新增套餐
@@ -103,6 +107,8 @@ public class SetmealServiceImpl implements SetmealService {
         rsMap.put("setmealCount",setmealCount);
         return rsMap;
     }
+
+
 
     /**
      * 设置套餐和检查组中间表

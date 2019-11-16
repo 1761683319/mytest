@@ -15,11 +15,11 @@
 <body class="hold-transition">
 <div id="app">
     <div class="content-header">
-        <h1>统计分析<small>套餐占比</small></h1>
+        <h1>统计分析<small>会员年龄段占比</small></h1>
         <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>统计分析</el-breadcrumb-item>
-            <el-breadcrumb-item>套餐占比</el-breadcrumb-item>
+            <el-breadcrumb-item>会员年龄段占比</el-breadcrumb-item>
         </el-breadcrumb>
     </div>
     <div class="app-container">
@@ -40,10 +40,10 @@
     // 使用刚指定的配置项和数据显示图表。
     //myChart.setOption(option);
 
-    axios.get("/report/getMemberSexReport.do").then((res)=>{
+    axios.get("/report/getMemberAgeReport.do").then((res)=>{
         myChart1.setOption({
             title : {
-                text: '会员男女占比',
+                text: '会员年龄段占比',
                 subtext: '',
                 x:'center'
             },
@@ -54,15 +54,15 @@
             legend: {
                 orient: 'vertical',
                 left: 'left',
-                data: res.data.data.MemberSex   //
+                data: res.data.data.MemberAge  //
             },
             series : [
                 {
-                    name: '会员男女占比',
+                    name: '会员年龄段占比',
                     type: 'pie',
                     radius : '55%',
                     center: ['50%', '60%'],
-                    data:res.data.data.MemberSexCount,
+                    data:res.data.data.MemberAgeCount,
                     itemStyle: {
                         emphasis: {
                             shadowBlur: 10,

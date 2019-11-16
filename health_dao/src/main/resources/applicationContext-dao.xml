@@ -22,7 +22,7 @@
         <property name="username" value="root" />
         <property name="password" value="root" />
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/health77" />
+        <property name="url" value="jdbc:mysql://localhost:3306/health77?characterEncoding=utf-8" />
     </bean>
 
     <!--配置SqlSessionFactory-->
