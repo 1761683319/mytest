@@ -4,7 +4,7 @@
 <mapper namespace="com.itheima.dao.MenuDao" >
     <!--根据名字查询menu-->
     <select id="findMenuOne" parameterType="string" resultType="com.itheima.pojo.Menu" >
-       SELECT tm.name
+       SELECT tm.id,tm.name,tm.linkUrl,tm.path,tm.priority,tm.description,tm.icon,tm.parentMenuId
 FROM t_menu tm
 WHERE tm.id IN (
 	SELECT trm.menu_id
