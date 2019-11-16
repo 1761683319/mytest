@@ -1,6 +1,10 @@
 package com.itheima.service;
 
+import com.itheima.entity.PageResult;
+import com.itheima.pojo.Role;
 import com.itheima.pojo.User;
+
+import java.util.List;
 
 /**
  * 用户接口服务
@@ -13,5 +17,23 @@ public interface UserService {
      * @param username
      * @return
      */
+
+    User findUserByUsername(String username);
+
+
     User findByUserName(String username);
+
+    PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString);
+
+    List<Role> findRoleList();
+
+    void add(com.itheima.pojo.User user, Integer[] roleIds);
+
+    User findById(Integer id);
+
+    List<Integer> findroleIds(Integer id);
+
+    void edit(User user, Integer[] roleIds);
+
+    void delete(Integer id);
 }

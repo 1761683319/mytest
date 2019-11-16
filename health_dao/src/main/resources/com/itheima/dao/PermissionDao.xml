@@ -7,4 +7,48 @@
     select tp.* from t_permission tp where tp.id in(select permission_id from t_role_permission where role_id = #{roleId})
     </select>
 
+    <!-- 查询权限列表-->
+    <select id="findPage" parameterType="string" resultType="com.itheima.pojo.Permission">
+        SELECT * FROM t_permission
+        <if test="value !=null and value.length>0">
+            WHERE NAME LIKE concat('%',#{value},'%')
+        </if>
+    </select>
+
+    <!--增加权限-->
+    <insert id="add" parameterType="com.itheima.pojo.Permission">
+        INSERT INTO t_permission(NAME,keyword,description) VALUES (#{name},#{keyword},#{description})
+    </insert>
+
+    <!--查询一条权限回显-->
+    <select id="findById" parameterType="int" resultType="com.itheima.pojo.Permission">
+        select * from t_permission where id = #{id}
+    </select>
+
+    <!--编辑 修改-->
+    <update id="edit" parameterType="com.itheima.pojo.Permission">
+        UPDATE t_permission
+        <set>
+            <if test="name !=null and name.length>0">
+                name =#{name},
+            </if>
+            <if test="keyword !=null and keyword.length>0">
+                keyword=#{keyword},
+            </if>
+            <if test="description !=null and description.length>0">
+                description = #{description},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!--删除 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM t_permission WHERE id = #{id}
+    </delete>
+
+    <select id="findRoleCountByPermissionsId" parameterType="int" resultType="long">
+        SELECT COUNT(*) total FROM t_role_permission WHERE  permission_id = #{id}
+    </select>
+
 </mapper>

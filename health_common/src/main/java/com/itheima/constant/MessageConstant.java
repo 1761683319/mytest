@@ -67,4 +67,6 @@ public class MessageConstant {
     public static final String GET_SETMEAL_LIST_SUCCESS = "查询套餐列表数据成功";
     public static final String GET_SETMEAL_LIST_FAIL = "查询套餐列表数据失败";
     public static final String PARAM_FAIL = "非法参数";
+    public static final String ADD_MENU_SUCCESS = "添加菜单成功";
+    public static final String ADD_MENU_FAIL = "添加菜单失败";
 }
