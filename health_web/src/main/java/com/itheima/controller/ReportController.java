@@ -121,8 +121,6 @@ public class ReportController {
         rsMap.put("MemberAge", getMemberMapSex.get("MemberAge"));
         //套餐对应的预约数量
         rsMap.put("MemberAgeCount", getMemberMapSex.get("MemberAgeCount"));
-        int x = 0;
-        int y =0;
         return new Result(true, MessageConstant.GET_SETMEAL_COUNT_REPORT_SUCCESS, rsMap);
         //
 
