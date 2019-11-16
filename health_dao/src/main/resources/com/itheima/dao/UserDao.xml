@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.dao.UserDao" >
+    <!--根据用户名查询用户信息-->
+    <select id="findByUserName" parameterType="string" resultType="com.itheima.pojo.User">
+        select * from t_user where username = #{username}
+    </select>
+
+    <!--使用登录名，查询用户信息-->
+    <resultMap id="userMap" type="com.itheima.pojo.User">
+        <id property="id" column="id"></id>
+        <result property="birthday" column="birthday"></result>
+        <result property="gender" column="gender"></result>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="remark" column="remark"></result>
+        <result property="station" column="station"></result>
+        <result property="telephone" column="telephone"></result>
+        <collection property="roles" column="id" select="com.itheima.health.dao.RoleDao.findRolesByUserId"></collection>
+    </resultMap>
+    <select id="findUserByUsername" parameterType="string" resultMap="userMap">
+        SELECT * FROM t_user WHERE username = #{username}
+    </select>
+
+    <!--分页查询-->
+    <select id="pageQuery" parameterType="string" resultType="com.itheima.pojo.User">
+        select * from t_user
+        <if test="value!=null and value.length>0">
+            where username like concat('%',#{value},'%')
+        </if>
+    </select>
+
+    <!--第二项回显-->
+    <select id="findRoleList" resultType="com.itheima.pojo.Role">
+        select * from t_role
+    </select>
+
+    <!--添加用户-->
+    <insert id="add" parameterType="com.itheima.pojo.User">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into t_user(birthday,gender,username,password,remark)value
+        (#{birthday},#{gender},#{username},#{password},#{remark})
+    </insert>
+    <!--添加中间表-->
+    <insert id="addUserAndRole" parameterType="map">
+        insert into t_user_role(user_id,role_id) value (#{User_Id},#{Role_Id})
+    </insert>
+
+    <!--编辑 回显数据 ①-->
+    <select id="findById" parameterType="int" resultType="com.itheima.pojo.User">
+       SELECT * FROM t_user WHERE id = #{id}
+    </select>
+
+    <!--编辑回显 ②-->
+    <select id="findroleIds" parameterType="int" resultType="int">
+        SELECT role_id FROM t_user_role WHERE user_id = #{id}
+    </select>
+
+    <!--编辑用户-->
+    <update id="edit" parameterType="com.itheima.pojo.User">
+        update t_user
+        <set>
+            <if test="birthday !=null">
+                birthday = #{birthday},
+            </if>
+            <if test="username !=null and username.length>0">
+                username =#{username},
+            </if>
+            <if test="gender!=null and gender.length>0">
+                gender = #{gender},
+            </if>
+            <if test="remark !=null and remark.length>0">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserIdByRoleIds" parameterType="int">
+        DELETE FROM t_user_role WHERE user_id = #{id}
+    </delete>
+
+    <!--删除 关系确认-->
+    <select id="findRoleCountByUserId" parameterType="int" resultType="long">
+        SELECT COUNT(role_id) total FROM t_user_role WHERE user_id = #{id}
+    </select>
+
+    <!--删除操作 -->
+    <delete id="delete" parameterType="int">
+        delete from t_user where id = #{id}
+    </delete>
+</mapper>
