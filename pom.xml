@@ -50,7 +50,7 @@
         <!--redis客户端-->
         <jedis.version>2.7.0</jedis.version>
         <!--定时任务调度的框架 -->
-        <quartz.version>2.2.1</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
     </properties>
     <!-- 依赖管理标签  必须加 -->
     <dependencyManagement>
