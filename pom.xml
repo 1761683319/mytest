@@ -32,7 +32,7 @@
         <pagehelper.version>4.1.4</pagehelper.version>
         <servlet-api.version>2.5</servlet-api.version>
         <!--alibba dubbo-->
-        <dubbo.version>2.6.0</dubbo.version>
+        <dubbo.version>2.6.12</dubbo.version>
         <!--注册中心-->
         <zookeeper.version>3.4.7</zookeeper.version>
         <zkclient.version>0.1</zkclient.version>
