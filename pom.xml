@@ -46,7 +46,7 @@
         <!--安全框架 -->
         <spring.security.version>5.0.5.RELEASE</spring.security.version>
         <!--操作office-->
-        <poi.version>3.14</poi.version>
+        <poi.version>4.1.1</poi.version>
         <!--redis客户端-->
         <jedis.version>2.7.0</jedis.version>
         <!--定时任务调度的框架 -->
